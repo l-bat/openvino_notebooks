@@ -48,9 +48,7 @@ class CompiledModelDecorator(ov.CompiledModel):
         return super().__call__(*args, **kwargs)
 
 
-def collect_calibration_data(
-    pipeline, automasker, mask_processor, dataset, subset_size
-):
+def collect_calibration_data(pipeline, automasker, mask_processor, dataset, subset_size):
     original_unet = pipeline.unet.unet
     pipeline.unet.unet = CompiledModelDecorator(original_unet)
 
@@ -85,9 +83,7 @@ def collect_calibration_data(
 def compress_model(core, model_path, save_path, group_size=128, ratio=0.8):
     if not save_path.exists():
         print(f"{model_path.stem} compression started")
-        print(
-            f"Compression parameters:\n\tmode = {nncf.CompressWeightsMode.INT4_SYM}\n\tratio = {ratio}\n\tgroup_size = {group_size}"
-        )
+        print(f"Compression parameters:\n\tmode = {nncf.CompressWeightsMode.INT4_SYM}\n\tratio = {ratio}\n\tgroup_size = {group_size}")
         model = core.read_model(model_path)
         compressed_model = nncf.compress_weights(
             model,
@@ -103,9 +99,7 @@ def compress_model(core, model_path, save_path, group_size=128, ratio=0.8):
 def compress_models(core, group_size=128, ratio=0.8):
     compress_model(core, VAE_ENCODER_PATH, VAE_ENCODER_INT4_PATH, group_size, ratio)
     compress_model(core, VAE_DECODER_PATH, VAE_DECODER_INT4_PATH, group_size, ratio)
-    compress_model(
-        core, DENSEPOSE_PROCESSOR_PATH, DENSEPOSE_PROCESSOR_INT4_PATH, group_size, ratio
-    )
+    compress_model(core, DENSEPOSE_PROCESSOR_PATH, DENSEPOSE_PROCESSOR_INT4_PATH, group_size, ratio)
     compress_model(core, SCHP_PROCESSOR_ATR, SCHP_PROCESSOR_ATR_INT4, group_size, ratio)
     compress_model(core, SCHP_PROCESSOR_LIP, SCHP_PROCESSOR_LIP_INT4, group_size, ratio)
 
@@ -133,6 +127,4 @@ def compare_models_size():
             continue
         fp16_ir_model_size = fp16_path.with_suffix(".bin").stat().st_size
         optimized_model_size = optimized_path.with_suffix(".bin").stat().st_size
-        print(
-            f"{fp16_path.stem} compression rate: {fp16_ir_model_size / optimized_model_size:.3f}"
-        )
+        print(f"{fp16_path.stem} compression rate: {fp16_ir_model_size / optimized_model_size:.3f}")
